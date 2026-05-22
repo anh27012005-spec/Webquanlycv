@@ -2,6 +2,7 @@ package web.quan.ly.entity;
 
 import jakarta.persistence.*;
 import web.quan.ly.entity.enums.Gender;
+import web.quan.ly.entity.Cv_certificate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +19,9 @@ public class Cv {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(mappedBy = "cv")
+    private Cv_certificate cvCertificate;
 
     private String title;
 
@@ -65,6 +69,14 @@ public class Cv {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Cv_certificate getCvCertificate() {
+        return cvCertificate;
+    }
+
+    public void setCvCertificate(Cv_certificate cvCertificate) {
+        this.cvCertificate = cvCertificate;
     }
 
     public String getTitle() {
