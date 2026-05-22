@@ -1,7 +1,6 @@
 package web.quan.ly.entity;
+
 import jakarta.persistence.*;
-import web.quan.ly.entity.User;
-import web.quan.ly.entity.Company;
 import web.quan.ly.entity.enums.Status;
 
 import java.time.LocalDate;
@@ -13,14 +12,16 @@ public class Job {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer job_id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "recruiter_id")
-    private User recruiter_id;
+    private User recruiter;
+
+    // công ty đăng job
     @ManyToOne
     @JoinColumn(name = "company_id")
-    private Company company_id;
+    private Company company;
 
     private String title;
 
@@ -28,17 +29,19 @@ public class Job {
 
     private String description;
 
-    private String requirement ;
+    private String requirement;
 
-    private String benifit;
+    private String benefit;
 
-    private Integer salary_min;
-    private Integer salary_max;
+    private Integer salaryMin;
+
+    private Integer salaryMax;
 
     private String location;
 
     private String experience;
-    private String employment_type;
+
+    private String employmentType;
 
     private Integer quantity;
 
@@ -47,71 +50,159 @@ public class Job {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "is_delete")
     private Boolean isDelete;
 
-    public Integer getJob_id() {return job_id;}
-    public void setJob_id(Integer job_id){this.job_id=job_id;}
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.isDelete = false;
+    }
 
-    public User getRecruiter_id() {return recruiter_id;}
-    public void setRecruiter_id(User recruiter_id) {this.recruiter_id=recruiter_id;}
+    public Integer getId() {
+        return id;
+    }
 
-    public Company getCompany_id() {return company_id;}
-    public void setCompany_id(Company company_id) {this.company_id=company_id;}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public String getTitle() {return title;}
-    public void setTitle(String title) {this.title=title;}
+    public User getRecruiter() {
+        return recruiter;
+    }
 
-    public String getPosition() {return position;}
-    public void setPosition(String position) {this.position=position;}
+    public void setRecruiter(User recruiter) {
+        this.recruiter = recruiter;
+    }
 
-    public String getDescription() {return description;}
-    public void setDescription(String description) {this.description=description;}
+    public Company getCompany() {
+        return company;
+    }
 
-    public String getRequirement() {return requirement;}
-    public void setRequirement(String requirement) {this.requirement=requirement;}
+    public void setCompany(Company company) {
+        this.company = company;
+    }
 
-    public String getBenifit() {return benifit;}
-    public void setBenifit(String benifit) {this.benifit=benifit;}
+    public String getTitle() {
+        return title;
+    }
 
-    public Integer getSalary_min() {return salary_min;}
-    public void setSalary_min(Integer salary_min) {this.salary_min=salary_min;}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public Integer getSalary_max() {return salary_max;}
-    public void setSalary_max(Integer salary_max) {this.salary_max=salary_max;}
+    public String getPosition() {
+        return position;
+    }
 
-    public String getLocation() {return location;}
-    public void setLocation(String location) {this.location=location;}
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
-    public String getExperience() {return experience;}
-    public void setExperience(String experience) {this.experience=experience;}
+    public String getDescription() {
+        return description;
+    }
 
-    public String getEmployment_type() {return employment_type;}
-    public void setEmployment_type(String employment_type) {this.employment_type=employment_type;}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Integer getQuantity() {return quantity;}
-    public void setQuantity(Integer quantity) {this.quantity=quantity;}
+    public String getRequirement() {
+        return requirement;
+    }
 
-    public LocalDate getDeadline() {return deadline;}
-    public void setDeadline(LocalDate deadline) {this.deadline=deadline;}
+    public void setRequirement(String requirement) {
+        this.requirement = requirement;
+    }
 
-    public Status getStatus() {return status;}
-    public void setStatus(Status status) {this.status=status;}
+    public String getBenefit() {
+        return benefit;
+    }
 
-    public LocalDateTime getCreatedAt() {return createdAt;}
-    public void setCreatedAt(LocalDateTime createdAt) {this.createdAt=createdAt;}
+    public void setBenefit(String benefit) {
+        this.benefit = benefit;
+    }
 
-    public Boolean getIsDelete() {return isDelete;}
-    public void setIsDelete(Boolean isDelete) {this.isDelete=isDelete;}
+    public Integer getSalaryMin() {
+        return salaryMin;
+    }
 
+    public void setSalaryMin(Integer salaryMin) {
+        this.salaryMin = salaryMin;
+    }
 
+    public Integer getSalaryMax() {
+        return salaryMax;
+    }
 
+    public void setSalaryMax(Integer salaryMax) {
+        this.salaryMax = salaryMax;
+    }
 
+    public String getLocation() {
+        return location;
+    }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
+    public String getExperience() {
+        return experience;
+    }
 
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
 
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Boolean getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Boolean isDelete) {
+        this.isDelete = isDelete;
+    }
 }

@@ -1,4 +1,45 @@
 package web.quan.ly.service.impl;
 
-public class ApplicationServiceImpl {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import web.quan.ly.entity.Application;
+import web.quan.ly.repository.ApplicationRepository;
+import web.quan.ly.service.ApplicationService;
+
+import java.util.List;
+
+@Service
+
+public class ApplicationServiceImpl implements ApplicationService {
+
+    @Autowired
+    private ApplicationRepository applicationRepository;
+
+    @Override
+    public List<Application> getAll() {
+        return applicationRepository.findAll();
+    }
+
+    @Override
+    public Application getById(Integer id) {
+        return applicationRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Application create(Application application) {
+        return applicationRepository.save(application);
+    }
+
+    @Override
+    public Application update(Integer id, Application application) {
+        application.setId(id);
+        return applicationRepository.save(application);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        applicationRepository.deleteById(id);
+    }
+
+
 }
