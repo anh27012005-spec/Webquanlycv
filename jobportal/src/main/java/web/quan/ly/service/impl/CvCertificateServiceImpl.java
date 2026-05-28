@@ -1,6 +1,5 @@
 package web.quan.ly.service.impl;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import web.quan.ly.entity.Cv_certificate;
@@ -16,22 +15,22 @@ public class CvCertificateServiceImpl implements CvCertificateService {
     private CvCertificateRepository cvCertificateRepository;
 
     @Override
-    public List<Cv_certificate> getAll(){
+    public List<Cv_certificate> getAll() {
         return cvCertificateRepository.findAll();
     }
 
     @Override
     public Cv_certificate getById(Integer id) {
-        return Cv_certificate.findById(id).orElse(null);
+        return cvCertificateRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Cv_certificate save(Cv_certificate cv_certificate){
+    public Cv_certificate save(Cv_certificate cv_certificate) {
         return cvCertificateRepository.save(cv_certificate);
     }
+
     @Override
     public void delete(Integer id) {
-        Cv_certificate.deleteById(id);
+        cvCertificateRepository.deleteById(id);
     }
-
 }
