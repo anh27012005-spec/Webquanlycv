@@ -3,6 +3,8 @@ package web.quan.ly.entity;
 import jakarta.persistence.*;
 import web.quan.ly.entity.enums.Gender;
 import web.quan.ly.entity.Cv_certificate;
+import web.quan.ly.entity.Cv_education;
+import java.util.List;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,14 +16,22 @@ public class Cv {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cv_id")
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(mappedBy = "cv")
-    private Cv_certificate cvCertificate;
+    @OneToMany(mappedBy = "cv")
+    private List<Cv_certificate> cvCertificates;
+
+    @OneToMany(mappedBy = "cv")
+    private List<Cv_education> cvEducations;
+
+    @OneToMany(mappedBy = "cv")
+    private List<Cv_experience> cvExperiences;
+
 
     private String title;
 
@@ -69,14 +79,6 @@ public class Cv {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Cv_certificate getCvCertificate() {
-        return cvCertificate;
-    }
-
-    public void setCvCertificate(Cv_certificate cvCertificate) {
-        this.cvCertificate = cvCertificate;
     }
 
     public String getTitle() {
@@ -166,4 +168,29 @@ public class Cv {
     public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
+
+    public List<Cv_certificate> getCvCertificates() {
+        return cvCertificates;
+    }
+
+    public void setCvCertificates(List<Cv_certificate> cvCertificates) {
+        this.cvCertificates = cvCertificates;
+    }
+
+    public List<Cv_education> getCvEducations() {
+        return cvEducations;
+    }
+
+    public void setCvEducations(List<Cv_education> cvEducations) {
+        this.cvEducations = cvEducations;
+    }
+
+    public List<Cv_experience> getCvExperiences() {
+        return cvExperiences;
+    }
+
+    public void setCvExperiences(List<Cv_experience> cvExperiences) {
+        this.cvExperiences = cvExperiences;
+    }
+
 }

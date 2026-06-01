@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cvcertificate")
-
 public class CvCertificateController {
 
     @Autowired
@@ -20,6 +19,11 @@ public class CvCertificateController {
     @GetMapping
     public ResponseEntity<List<Cv_certificate>> getAll() {
         return ResponseEntity.ok(cvCertificateService.getAll());
+    }
+
+    @PostMapping
+    public Cv_certificate addCv_certificate(@RequestBody Cv_certificate cv_certificate) {
+        return cvCertificateService.save(cv_certificate);
     }
 
 }

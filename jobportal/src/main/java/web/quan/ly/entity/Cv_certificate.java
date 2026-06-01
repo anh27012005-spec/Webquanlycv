@@ -13,7 +13,7 @@ public class Cv_certificate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "cv_id")
     private Cv cv;
 
