@@ -23,7 +23,8 @@ public class UserSessionServiceImpl implements UserSessionService {
 
     @Override
     public UserSession getById(Integer id) {
-        return userSessionRepository.findById(id).orElse(null);
+        Optional<UserSession> session = userSessionRepository.findById(id);
+        return session.orElse(null);
     }
 
     @Override

@@ -16,13 +16,14 @@ import web.quan.ly.service.UserSessionService;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private UserSessionService userSessionService;
 
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        
+
         // Validate input
         if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
             throw new ValidationException(Constants.USERNAME_REQUIRED);
@@ -73,7 +74,11 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException(Constants.PASSWORD_REQUIRED);
         }
 
-        User user = findByUsername(request.getUsername());
+        Optional<User> userOpt = findByUsername(request.getUsername());
+        if (!userOpt.isPresent()) {
+            throw new NotFoundException(Constants.ACCOUNT_NOT_FOUND);
+        }
+        User user = userOpt.get();
 
         if (!user.getPassHash().equals(request.getPassHash())) {
             throw new AuthException(Constants.PASSWORD_INCORRECT);
@@ -81,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
         // Generate token
         String token = UUID.randomUUID().toString();
-        
+
         // Create session
         userSessionService.createSession(user, token);
 
@@ -93,9 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new NotFoundException(Constants.ACCOUNT_NOT_FOUND));
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

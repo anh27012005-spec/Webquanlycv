@@ -5,6 +5,7 @@ import web.quan.ly.dto.LoginRequest;
 import web.quan.ly.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -19,7 +20,7 @@ public interface UserService {
 
     void delete(Integer id);
 
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
     AuthResponse login(LoginRequest request);
 }
