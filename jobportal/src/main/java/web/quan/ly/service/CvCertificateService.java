@@ -1,16 +1,16 @@
 package web.quan.ly.service;
 
-import web.quan.ly.entity.Cv_certificate;
+import web.quan.ly.entity.CvCertificate;
 
 import java.util.List;
 
 public interface CvCertificateService {
 
-    List<Cv_certificate> getAll();
+    List<CvCertificate> getAll();
 
-    Cv_certificate getById(Integer id);
+    CvCertificate getById(Integer id);
 
-    Cv_certificate save(Cv_certificate cv_certificate);
+    CvCertificate save(CvCertificate cv_certificate);
 
     void delete(Integer id);
 }

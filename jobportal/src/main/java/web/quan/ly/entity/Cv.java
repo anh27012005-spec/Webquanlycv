@@ -2,8 +2,7 @@ package web.quan.ly.entity;
 
 import jakarta.persistence.*;
 import web.quan.ly.entity.enums.Gender;
-import web.quan.ly.entity.Cv_certificate;
-import web.quan.ly.entity.Cv_education;
+
 import java.util.List;
 
 import java.time.LocalDate;
@@ -24,13 +23,19 @@ public class Cv {
     private User user;
 
     @OneToMany(mappedBy = "cv")
-    private List<Cv_certificate> cvCertificates;
+    private List<CvCertificate> cvCertificates;
 
     @OneToMany(mappedBy = "cv")
-    private List<Cv_education> cvEducations;
+    private List<CvEducation> cvEducations;
 
     @OneToMany(mappedBy = "cv")
-    private List<Cv_experience> cvExperiences;
+    private List<CvExperience> cvExperiences;
+
+    @OneToMany(mappedBy = "cv")
+    private List<CvProject> cvProject;
+
+    @OneToMany(mappedBy = "cv")
+    private List<CvSkill> cvSkill;
 
 
     private String title;
@@ -169,28 +174,42 @@ public class Cv {
         this.isDelete = isDelete;
     }
 
-    public List<Cv_certificate> getCvCertificates() {
+    public List<CvCertificate> getCvCertificates() {
         return cvCertificates;
     }
 
-    public void setCvCertificates(List<Cv_certificate> cvCertificates) {
+    public void setCvCertificates(List<CvCertificate> cvCertificates) {
         this.cvCertificates = cvCertificates;
     }
 
-    public List<Cv_education> getCvEducations() {
+    public List<CvEducation> getCvEducations() {
         return cvEducations;
     }
 
-    public void setCvEducations(List<Cv_education> cvEducations) {
+    public void setCvEducations(List<CvEducation> cvEducations) {
         this.cvEducations = cvEducations;
     }
 
-    public List<Cv_experience> getCvExperiences() {
+    public List<CvExperience> getCvExperiences() {
         return cvExperiences;
     }
 
-    public void setCvExperiences(List<Cv_experience> cvExperiences) {
+    public void setCvExperiences(List<CvExperience> cvExperiences) {
         this.cvExperiences = cvExperiences;
     }
 
+    public List<CvSkill> getCvSkill() {
+        return cvSkill;
+    }
+
+    public void setCvSkills(List<CvSkill> cvSkill) {
+        this.cvSkill = cvSkill;
+    }
+    public List<CvProject> getCvProject() {
+        return cvProject;
+    }
+
+    public void setCvProject(List<CvProject> cvProject) {
+        this.cvProject = cvProject;
+    }
 }

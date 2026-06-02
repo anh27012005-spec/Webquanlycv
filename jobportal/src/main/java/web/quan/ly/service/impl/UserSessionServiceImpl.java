@@ -3,7 +3,7 @@ package web.quan.ly.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import web.quan.ly.entity.User;
-import web.quan.ly.entity.User_Session;
+import web.quan.ly.entity.UserSession;
 import web.quan.ly.repository.UserSessionRepository;
 import web.quan.ly.service.UserSessionService;
 
@@ -17,23 +17,23 @@ public class UserSessionServiceImpl implements UserSessionService {
     private UserSessionRepository userSessionRepository;
 
     @Override
-    public List<User_Session> getAll() {
+    public List<UserSession> getAll() {
         return userSessionRepository.findAll();
     }
 
     @Override
-    public User_Session getById(Integer id) {
+    public UserSession getById(Integer id) {
         return userSessionRepository.findById(id).orElse(null);
     }
 
     @Override
-    public User_Session getByToken(String token) {
+    public UserSession getByToken(String token) {
         return userSessionRepository.findByToken(token).orElse(null);
     }
 
     @Override
-    public User_Session createSession(User user, String token) {
-        User_Session session = new User_Session();
+    public UserSession createSession(User user, String token) {
+        UserSession session = new UserSession();
         session.setUser(user);
         session.setToken(token);
         session.setRevoked(false);
@@ -43,9 +43,9 @@ public class UserSessionServiceImpl implements UserSessionService {
 
     @Override
     public void revokeSession(String token) {
-        Optional<User_Session> sessionOpt = userSessionRepository.findByToken(token);
+        Optional<UserSession> sessionOpt = userSessionRepository.findByToken(token);
         if (sessionOpt.isPresent()) {
-            User_Session session = sessionOpt.get();
+            UserSession session = sessionOpt.get();
             session.setRevoked(true);
             userSessionRepository.save(session);
         }
@@ -53,11 +53,11 @@ public class UserSessionServiceImpl implements UserSessionService {
 
     @Override
     public boolean isTokenValid(String token) {
-        Optional<User_Session> sessionOpt = userSessionRepository.findByToken(token);
+        Optional<UserSession> sessionOpt = userSessionRepository.findByToken(token);
         if (sessionOpt.isEmpty()) {
             return false;
         }
-        User_Session session = sessionOpt.get();
+        UserSession session = sessionOpt.get();
         boolean isNotRevoked = !Boolean.TRUE.equals(session.getRevoked());
         boolean isNotExpired = session.getExpiredAt().isAfter(LocalDate.now());
         return isNotRevoked && isNotExpired;

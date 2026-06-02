@@ -2,37 +2,37 @@ package web.quan.ly.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import web.quan.ly.entity.Cv_education;
-import web.quan.ly.repository.Cv_EducationRepository;
-import web.quan.ly.service.Cv_educationService;
+import web.quan.ly.entity.CvEducation;
+import web.quan.ly.repository.CvEducationRepository;
+import web.quan.ly.service.CvEducationService;
 
 import java.util.List;
 
 @Service
-public class Cv_educationServiceImpl implements Cv_educationService {
+public class CvEducationServiceImpl implements CvEducationService {
 
     @Autowired
-    private Cv_EducationRepository cv_educationRepository;
+    private CvEducationRepository cv_educationRepository;
 
     @Override
-    public List<Cv_education> getAll() {
+    public List<CvEducation> getAll() {
         return cv_educationRepository.findAll();
     }
 
     @Override
-    public Cv_education getById(Integer id) {
+    public CvEducation getById(Integer id) {
         return cv_educationRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Cv_education create(Cv_education cv_education) {
+    public CvEducation create(CvEducation cv_education) {
         return cv_educationRepository.save(cv_education);
     }
 
     @Override
-    public Cv_education save(Integer id, Cv_education cv_education) {
+    public CvEducation save(Integer id, CvEducation cv_education) {
 
-        Cv_education old = cv_educationRepository.findById(id).orElse(null);
+        CvEducation old = cv_educationRepository.findById(id).orElse(null);
 
         if (old != null) {
             return cv_educationRepository.save(cv_education);

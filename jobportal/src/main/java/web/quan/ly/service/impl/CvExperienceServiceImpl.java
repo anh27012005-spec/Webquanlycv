@@ -2,7 +2,7 @@ package web.quan.ly.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import web.quan.ly.entity.Cv_experience;
+import web.quan.ly.entity.CvExperience;
 import web.quan.ly.repository.CvExperienceRepository;
 import web.quan.ly.service.CvExperienceService;
 
@@ -15,17 +15,17 @@ public class CvExperienceServiceImpl implements CvExperienceService {
     private CvExperienceRepository cvExperienceRepository;
 
     @Override
-    public List<Cv_experience> getAll() {
+    public List<CvExperience> getAll() {
         return cvExperienceRepository.findAll();
     }
 
     @Override
-    public Cv_experience getById(Integer id) {
+    public CvExperience getById(Integer id) {
         return cvExperienceRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Cv_experience save(Cv_experience cv_experience) {
+    public CvExperience save(CvExperience cv_experience) {
         return cvExperienceRepository.save(cv_experience);
     }
 

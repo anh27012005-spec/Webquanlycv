@@ -1,14 +1,14 @@
 package web.quan.ly.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import web.quan.ly.entity.User_Session;
+import web.quan.ly.entity.UserSession;
 
 import java.util.Optional;
 
 
-public interface UserSessionRepository extends JpaRepository<User_Session, Integer> {
+public interface UserSessionRepository extends JpaRepository<UserSession, Integer> {
 
-    Optional<User_Session> findByToken(String token);
+    Optional<UserSession> findByToken(String token);
 
-    User_Session getById(Integer id);
+    UserSession getById(Integer id);
 }

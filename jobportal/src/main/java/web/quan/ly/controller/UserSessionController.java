@@ -3,7 +3,7 @@ package web.quan.ly.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import web.quan.ly.entity.User_Session;
+import web.quan.ly.entity.UserSession;
 import web.quan.ly.service.UserSessionService;
 
 import java.util.List;
@@ -16,13 +16,13 @@ public class UserSessionController {
     private UserSessionService userSessionService;
 
     @GetMapping
-    public List<User_Session> getAll() {
+    public List<UserSession> getAll() {
         return userSessionService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User_Session> getById(@PathVariable Integer id) {
-        User_Session session = userSessionService.getById(id);
+    public ResponseEntity<UserSession> getById(@PathVariable Integer id) {
+        UserSession session = userSessionService.getById(id);
         if (session == null) {
             return ResponseEntity.notFound().build();
         }
