@@ -9,7 +9,9 @@ import web.quan.ly.common.NotFoundException;
 import web.quan.ly.common.Constants;
 import web.quan.ly.dto.AuthResponse;
 import web.quan.ly.dto.LoginRequest;
+import web.quan.ly.entity.Role;
 import web.quan.ly.entity.User;
+import web.quan.ly.repository.RoleRepository;
 import web.quan.ly.repository.UserRepository;
 import web.quan.ly.service.UserService;
 import web.quan.ly.service.UserSessionService;
@@ -23,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private UserSessionService userSessionService;
@@ -39,6 +44,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User user) {
+        if (user.getRole() == null) {
+            Role candidateRole = roleRepository.findByName(Constants.ROLE_CANDIDATE);
+            if (candidateRole == null) {
+                throw new NotFoundException("Role CANDIDATE khong ton tai");
+            }
+            user.setRole(candidateRole);
+        }
+
         return userRepository.save(user);
     }
 
@@ -66,35 +79,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponse login(LoginRequest request) {
 
-        // Validate input
-        if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
-            throw new ValidationException(Constants.USERNAME_REQUIRED);
+        try {
+            // Validate input
+            if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+                throw new ValidationException(Constants.USERNAME_REQUIRED);
+            }
+            if (request.getPassHash() == null || request.getPassHash().trim().isEmpty()) {
+                throw new ValidationException(Constants.PASSWORD_REQUIRED);
+            }
+
+            Optional<User> userOpt = findByUsername(request.getUsername());
+            if (!userOpt.isPresent()) {
+                throw new NotFoundException(Constants.ACCOUNT_NOT_FOUND);
+            }
+            User user = userOpt.get();
+
+            if (!user.getPassHash().equals(request.getPassHash())) {
+                throw new AuthException(Constants.PASSWORD_INCORRECT);
+            }
+
+            // Generate token
+            String token = UUID.randomUUID().toString();
+
+            // Create session
+            userSessionService.createSession(user, token);
+
+            AuthResponse response = new AuthResponse();
+            response.setMessage(Constants.AUTH_SUCCESS);
+            response.setToken(token);
+
+            return response;
+        } catch (ValidationException | NotFoundException | AuthException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
-        if (request.getPassHash() == null || request.getPassHash().trim().isEmpty()) {
-            throw new ValidationException(Constants.PASSWORD_REQUIRED);
-        }
-
-        Optional<User> userOpt = findByUsername(request.getUsername());
-        if (!userOpt.isPresent()) {
-            throw new NotFoundException(Constants.ACCOUNT_NOT_FOUND);
-        }
-        User user = userOpt.get();
-
-        if (!user.getPassHash().equals(request.getPassHash())) {
-            throw new AuthException(Constants.PASSWORD_INCORRECT);
-        }
-
-        // Generate token
-        String token = UUID.randomUUID().toString();
-
-        // Create session
-        userSessionService.createSession(user, token);
-
-        AuthResponse response = new AuthResponse();
-        response.setMessage(Constants.AUTH_SUCCESS);
-        response.setToken(token);
-
-        return response;
     }
 
     @Override

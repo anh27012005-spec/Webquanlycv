@@ -34,7 +34,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
-        ApiResponse<?> response = ApiResponse.error("INTERNAL_ERROR", "Co loi trong qua trinh xu ly");
+        e.printStackTrace();
+
+        ApiResponse<?> response = ApiResponse.error(
+                "INTERNAL_ERROR",
+                "Co loi trong qua trinh xu ly"
+        );
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }
