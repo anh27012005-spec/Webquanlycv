@@ -5,5 +5,6 @@ import web.quan.ly.entity.Company;
 
 
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
+    boolean existsByName(String name);
 
 }

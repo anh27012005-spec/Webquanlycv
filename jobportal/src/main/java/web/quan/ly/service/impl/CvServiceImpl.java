@@ -1,6 +1,7 @@
 package web.quan.ly.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import web.quan.ly.dto.CvRequest;
 import web.quan.ly.entity.Cv;
 import web.quan.ly.repository.CvRepository;
 import web.quan.ly.service.CvService;
@@ -24,7 +25,15 @@ public class CvServiceImpl implements CvService {
     }
 
     @Override
-    public Cv save(Cv cv) {
+    public Cv save(CvRequest request) {
+
+        Cv cv = new Cv();
+
+        cv.setTitle(request.getTitle());
+        cv.setFullName(request.getFullname());
+        cv.setEmail(request.getEmail());
+        cv.setPhone(request.getPhone());
+
         return CvRepository.save(cv);
     }
 

@@ -3,10 +3,7 @@ package web.quan.ly.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import web.quan.ly.common.AuthException;
-import web.quan.ly.common.ValidationException;
-import web.quan.ly.common.NotFoundException;
-import web.quan.ly.common.Constants;
+import web.quan.ly.common.*;
 import web.quan.ly.dto.AuthResponse;
 import web.quan.ly.dto.LoginRequest;
 import web.quan.ly.entity.Role;
@@ -19,6 +16,8 @@ import web.quan.ly.service.UserSessionService;
 import java.util.List;
 import java.util.UUID;
 import java.util.Optional;
+import java.util.Objects;
+import web.quan.ly.dto.UserRequest;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -56,6 +55,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Response<User> createV2(User user) {
+        //Validate
+        if(user == null){
+            return new Response(401, "Dữ liệu bị rỗng!", null);
+        }
+
+        if(user.getEmail().isEmpty()) {
+            return new Response(401, "Email bị rỗng!", null);
+        }
+
+        if (user.getRole() == null) {
+            Role candidateRole = roleRepository.findByName(Constants.ROLE_CANDIDATE);
+            if (candidateRole == null) {
+                throw new NotFoundException("Role CANDIDATE khong ton tai");
+            }
+            user.setRole(candidateRole);
+        }
+
+        userRepository.save(user);
+
+        return new Response(200, "Tạo mới thành công", user);
+    }
+
+    @Override
     public User update(Integer id, User user) {
 
         User oldUser = userRepository.findById(id).orElse(null);
@@ -76,25 +99,42 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+
+    @Override
+    public User create(UserRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new ValidationException("Email da ton tai");
+        }
+
+        if (userRepository.existsBySdt(request.getSdt())) {
+            throw new ValidationException("So dien thoai da ton tai");
+        }
+
+        Role candidateRole = roleRepository.findByName(Constants.ROLE_CANDIDATE);
+        if (candidateRole == null) {
+            throw new NotFoundException("Role CANDIDATE khong ton tai");
+        }
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setSdt(request.getSdt());
+        user.setRole(candidateRole);
+
+        return userRepository.save(user);
+    }
     @Override
     public AuthResponse login(LoginRequest request) {
 
         try {
-            // Validate input
-            if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
-                throw new ValidationException(Constants.USERNAME_REQUIRED);
-            }
-            if (request.getPassHash() == null || request.getPassHash().trim().isEmpty()) {
-                throw new ValidationException(Constants.PASSWORD_REQUIRED);
-            }
-
             Optional<User> userOpt = findByUsername(request.getUsername());
             if (!userOpt.isPresent()) {
                 throw new NotFoundException(Constants.ACCOUNT_NOT_FOUND);
             }
             User user = userOpt.get();
 
-            if (!user.getPassHash().equals(request.getPassHash())) {
+            if (!Objects.equals(user.getPassHash(), request.getPassHash())) {
                 throw new AuthException(Constants.PASSWORD_INCORRECT);
             }
 

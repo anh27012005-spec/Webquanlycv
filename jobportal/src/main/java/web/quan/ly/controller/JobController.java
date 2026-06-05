@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 
 import web.quan.ly.entity.Job;
 import web.quan.ly.service.JobService;
+import jakarta.validation.Valid;
+import web.quan.ly.dto.JobRequest;
 
 import java.util.List;
 
@@ -26,15 +28,15 @@ public class JobController {
     }
 
     @PostMapping
-    public Job create(@RequestBody Job job) {
-        return jobService.create(job);
+    public Job create(@Valid @RequestBody JobRequest request) {
+        return jobService.create(request);
     }
 
     @PutMapping("/{id}")
     public Job update(@PathVariable Integer id,
-                      @RequestBody Job job) {
+                      @Valid @RequestBody JobRequest request) {
 
-        return jobService.update(id, job);
+        return jobService.update(id, request);
     }
 
     @DeleteMapping("/{id}")

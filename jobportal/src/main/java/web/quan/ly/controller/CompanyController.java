@@ -1,8 +1,10 @@
 package web.quan.ly.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import web.quan.ly.dto.CompanyRequest;
 import web.quan.ly.entity.Company;
 import web.quan.ly.service.CompanyService;
 
@@ -26,15 +28,15 @@ public class CompanyController {
     }
 
     @PostMapping
-    public Company create(@RequestBody Company company) {
-        return companyService.create(company);
+    public Company save(@Valid @RequestBody CompanyRequest companyRequest) {
+        return companyService.save(companyRequest);
     }
 
     @PutMapping("/{id}")
     public Company update(@PathVariable Integer id,
-                          @RequestBody Company company) {
+                          @Valid @RequestBody CompanyRequest companyRequest) {
 
-        return companyService.update(id, company);
+        return companyService.update(id, companyRequest);
     }
 
     @DeleteMapping("/{id}")

@@ -1,8 +1,11 @@
 package web.quan.ly.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import web.quan.ly.dto.CvRequest;
 import web.quan.ly.entity.Cv;
 import web.quan.ly.service.CvService;
 
@@ -26,7 +29,9 @@ public class CvController {
     }
 
     @PostMapping
-    public Cv addCv(@RequestBody Cv cv) {
-        return CvService.save(cv);
+    public ResponseEntity<Cv> createCv(
+            @Valid @RequestBody CvRequest request) {
+
+        return ResponseEntity.ok(CvService.save(request));
     }
 }

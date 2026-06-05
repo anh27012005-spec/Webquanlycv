@@ -40,6 +40,7 @@ public class Cv {
 
     private String title;
 
+    @Column(name = "fullName")
     private String fullName;
 
     private String email;

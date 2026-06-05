@@ -16,6 +16,7 @@ public class UserSession {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "tonken")
     private String token;
 
     @Column(name = "expired_at")

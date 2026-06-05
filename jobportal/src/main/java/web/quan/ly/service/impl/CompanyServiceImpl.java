@@ -2,7 +2,8 @@ package web.quan.ly.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import web.quan.ly.common.ValidationException;
+import web.quan.ly.dto.CompanyRequest;
 import web.quan.ly.entity.Company;
 import web.quan.ly.repository.CompanyRepository;
 import web.quan.ly.service.CompanyService;
@@ -26,24 +27,30 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company create(Company company) {
+    public Company save(CompanyRequest companyRequest) {
+
+        if (companyRepository.existsByName(companyRequest.getCompanyName())) {
+            throw new ValidationException("Cong ty da ton tai");
+        }
+
+        Company company = new Company();
+
+        company.setName(companyRequest.getCompanyName());
+        company.setDescription(companyRequest.getDescription());
+
         return companyRepository.save(company);
     }
 
     @Override
-    public Company update(Integer id, Company company) {
+     public Company update(Integer id, CompanyRequest companyRequest) {
 
-        Company oldCompany = companyRepository.findById(id).orElse(null);
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new ValidationException("Khong tim thay cong ty"));
 
-        if (oldCompany != null) {
+        company.setName(companyRequest.getCompanyName());
+        company.setDescription(companyRequest.getDescription());
 
-            oldCompany.setName(company.getName());
-            oldCompany.setDescription(company.getDescription());
-
-            return companyRepository.save(oldCompany);
-        }
-
-        return null;
+        return companyRepository.save(company);
     }
 
     @Override

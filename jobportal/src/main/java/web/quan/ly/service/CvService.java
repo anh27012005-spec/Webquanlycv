@@ -1,5 +1,6 @@
 package web.quan.ly.service;
 
+import web.quan.ly.dto.CvRequest;
 import web.quan.ly.entity.Cv;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface CvService {
 
     Cv getById(Integer id);
 
-    Cv save(Cv cv);
+    Cv save(CvRequest request);
 
     void delete(Integer id);
 }

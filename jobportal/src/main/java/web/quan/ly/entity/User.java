@@ -39,6 +39,13 @@ public class User {
     @Column(name = "create_at")
     private LocalDateTime createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+
     public Integer getId() {
         return id;
     }

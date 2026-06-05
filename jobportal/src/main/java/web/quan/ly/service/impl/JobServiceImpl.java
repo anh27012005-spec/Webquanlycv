@@ -2,7 +2,7 @@ package web.quan.ly.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import web.quan.ly.dto.JobRequest;
 import web.quan.ly.entity.Job;
 import web.quan.ly.repository.JobRepository;
 import web.quan.ly.service.JobService;
@@ -22,33 +22,39 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public Job getById(Integer id) {
-        return jobRepository.findById(id).orElse(null);
+        return jobRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay job"));
     }
 
     @Override
-    public Job create(Job job) {
+    public Job create(JobRequest request) {
+
+        Job job = new Job();
+
+        job.setTitle(request.getTitle());
+        job.setPosition(request.getPosition());
+        job.setDescription(request.getDescription());
+        job.setRequirement(request.getRequirement());
+
         return jobRepository.save(job);
     }
 
     @Override
-    public Job update(Integer id, Job job) {
+    public Job update(Integer id, JobRequest request) {
 
-        Job oldJob = jobRepository.findById(id).orElse(null);
+        Job job = getById(id);
 
-        if (oldJob != null) {
+        job.setTitle(request.getTitle());
+        job.setPosition(request.getPosition());
+        job.setDescription(request.getDescription());
+        job.setRequirement(request.getRequirement());
 
-            oldJob.setTitle(job.getTitle());
-            oldJob.setDescription(job.getDescription());
-            oldJob.setLocation(job.getLocation());
-
-            return jobRepository.save(oldJob);
-        }
-
-        return null;
+        return jobRepository.save(job);
     }
 
     @Override
     public void delete(Integer id) {
-        jobRepository.deleteById(id);
+        Job job = getById(id);
+        jobRepository.delete(job);
     }
 }

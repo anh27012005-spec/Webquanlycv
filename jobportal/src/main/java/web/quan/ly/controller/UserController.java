@@ -1,6 +1,7 @@
 package web.quan.ly.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +11,8 @@ import web.quan.ly.service.UserService;
 
 import java.util.List;
 
-import web.quan.ly.dto.LoginRequest;
-import web.quan.ly.dto.AuthResponse;
-
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
     @Autowired
@@ -32,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<User>> create(@RequestBody User user) {
         User createdUser = userService.create(user);
         return ResponseEntity.ok(ApiResponse.success("Created successfully", createdUser));
@@ -52,9 +50,4 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Deleted successfully", "OK"));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request) {
-        AuthResponse authResponse = userService.login(request);
-        return ResponseEntity.ok(ApiResponse.success("Login successful", authResponse));
-    }
 }
