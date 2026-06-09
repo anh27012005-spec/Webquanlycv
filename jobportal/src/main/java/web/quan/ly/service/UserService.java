@@ -1,26 +1,23 @@
 package web.quan.ly.service;
 
 import web.quan.ly.common.Response;
-import web.quan.ly.common.ValidationException;
 import web.quan.ly.dto.AuthResponse;
 import web.quan.ly.dto.LoginRequest;
 import web.quan.ly.dto.UserRequest;
 import web.quan.ly.entity.User;
-import web.quan.ly.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
 
-
     List<User> getAll();
 
     User getById(Integer id);
 
     User create(User user);
-    User create(UserRequest userRequest);
 
+    User create(UserRequest userRequest);
 
     Response<User> createV2(User user);
 
@@ -30,6 +27,7 @@ public interface UserService {
 
     Optional<User> findByUsername(String username);
 
-
     AuthResponse login(LoginRequest request);
+
+    void logout(String token);
 }

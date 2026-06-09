@@ -2,22 +2,13 @@ package web.quan.ly.dto;
 
 public class AuthResponse {
 
-    private String message;
     private String token;
 
     public AuthResponse() {
     }
-    public AuthResponse(String message, String token) {
-        this.message = message;
+
+    public AuthResponse(String token) {
         this.token = token;
-    }
-
-    public String getMessage(){
-        return  message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getToken() {
@@ -28,5 +19,3 @@ public class AuthResponse {
         this.token = token;
     }
 }
-
-

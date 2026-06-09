@@ -1,35 +1,30 @@
 package web.quan.ly.common;
 
 public class ApiResponse<T> {
+
     private boolean success;
-    private String code;
     private String message;
     private T data;
 
     public ApiResponse() {
     }
 
-    public ApiResponse(boolean success, String code, String message, T data) {
+    public ApiResponse(boolean success, String message, T data) {
         this.success = success;
-        this.code = code;
         this.message = message;
         this.data = data;
     }
 
     public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(true, "SUCCESS", "Success", data);
+        return new ApiResponse<>(true, "Thanh cong", data);
     }
 
     public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(true, "SUCCESS", message, data);
-    }
-
-    public static <T> ApiResponse<T> error(String code, String message) {
-        return new ApiResponse<>(false, code, message, null);
+        return new ApiResponse<>(true, message, data);
     }
 
     public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>(false, "ERROR", message, null);
+        return new ApiResponse<>(false, message, null);
     }
 
     public boolean isSuccess() {
@@ -38,14 +33,6 @@ public class ApiResponse<T> {
 
     public void setSuccess(boolean success) {
         this.success = success;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getMessage() {

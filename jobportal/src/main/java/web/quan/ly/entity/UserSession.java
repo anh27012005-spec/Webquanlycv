@@ -1,29 +1,30 @@
 package web.quan.ly.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_session")
-
 public class UserSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @Column(name = "token", unique = true, nullable = false)
+    private String token;
+
+    private boolean revoked;
+
+    private LocalDateTime expiredAt;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "tonken")
-    private String token;
-
-    @Column(name = "expired_at")
-    private LocalDate expiredAt;
-
-    @Column(name = "revoked")
-    private Boolean revoked;
+    public UserSession() {
+    }
 
     public Integer getId() {
         return id;
@@ -31,14 +32,6 @@ public class UserSession {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getToken() {
@@ -49,19 +42,27 @@ public class UserSession {
         this.token = token;
     }
 
-    public LocalDate getExpiredAt() {
-        return expiredAt;
-    }
-
-    public void setExpiredAt(LocalDate expiredAt) {
-        this.expiredAt = expiredAt;
-    }
-
-    public Boolean getRevoked() {
+    public boolean isRevoked() {
         return revoked;
     }
 
-    public void setRevoked(Boolean revoked) {
+    public void setRevoked(boolean revoked) {
         this.revoked = revoked;
+    }
+
+    public LocalDateTime getExpiredAt() {
+        return expiredAt;
+    }
+
+    public void setExpiredAt(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

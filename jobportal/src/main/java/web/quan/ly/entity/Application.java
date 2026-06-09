@@ -2,7 +2,7 @@ package web.quan.ly.entity;
 
 import jakarta.persistence.*;
 import web.quan.ly.entity.enums.Gender;
-import web.quan.ly.entity.enums.Status;
+import web.quan.ly.entity.enums.StatusApplication;
 
 import java.time.LocalDateTime;
 
@@ -25,8 +25,9 @@ public class Application {
 
     private String coverLetter;
 
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusApplication statusApplication;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -71,12 +72,12 @@ public class Application {
         this.coverLetter = coverLetter;
     }
 
-    public Status getStatus() {
-        return status;
+    public StatusApplication getStatusApplication() {
+        return statusApplication;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatusApplication(StatusApplication statusApplication) {
+        this.statusApplication = statusApplication;
     }
 
     public Gender getGender() {

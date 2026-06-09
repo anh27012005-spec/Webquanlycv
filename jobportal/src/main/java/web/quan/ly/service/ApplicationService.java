@@ -5,6 +5,8 @@ import java.util.List;
 
 public interface ApplicationService {
 
+    Application apply(Integer jobId, String username);
+
     List<Application> getAll();
 
     Application getById(Integer id);

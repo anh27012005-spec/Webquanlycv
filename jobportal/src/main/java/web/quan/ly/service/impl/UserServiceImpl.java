@@ -3,21 +3,20 @@ package web.quan.ly.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import web.quan.ly.security.JwtUtil;
 import web.quan.ly.common.*;
 import web.quan.ly.dto.AuthResponse;
 import web.quan.ly.dto.LoginRequest;
-import web.quan.ly.entity.Role;
-import web.quan.ly.entity.User;
-import web.quan.ly.repository.RoleRepository;
-import web.quan.ly.repository.UserRepository;
+import web.quan.ly.dto.UserRequest;
+import web.quan.ly.entity.*;
+import web.quan.ly.repository.*;
 import web.quan.ly.service.UserService;
 import web.quan.ly.service.UserSessionService;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
-import java.util.Optional;
 import java.util.Objects;
-import web.quan.ly.dto.UserRequest;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,6 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private UserSessionService userSessionService;
@@ -43,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User user) {
+
         if (user.getRole() == null) {
             Role candidateRole = roleRepository.findByName(Constants.ROLE_CANDIDATE);
             if (candidateRole == null) {
@@ -56,12 +59,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<User> createV2(User user) {
-        //Validate
-        if(user == null){
+
+        if (user == null) {
             return new Response(401, "Dữ liệu bị rỗng!", null);
         }
 
-        if(user.getEmail().isEmpty()) {
+        if (user.getEmail().isEmpty()) {
             return new Response(401, "Email bị rỗng!", null);
         }
 
@@ -84,10 +87,8 @@ public class UserServiceImpl implements UserService {
         User oldUser = userRepository.findById(id).orElse(null);
 
         if (oldUser != null) {
-
             oldUser.setName(user.getName());
             oldUser.setEmail(user.getEmail());
-
             return userRepository.save(oldUser);
         }
 
@@ -98,7 +99,6 @@ public class UserServiceImpl implements UserService {
     public void delete(Integer id) {
         userRepository.deleteById(id);
     }
-
 
     @Override
     public User create(UserRequest request) {
@@ -124,36 +124,49 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
     @Override
     public AuthResponse login(LoginRequest request) {
 
         try {
             Optional<User> userOpt = findByUsername(request.getUsername());
-            if (!userOpt.isPresent()) {
+
+            if (userOpt.isEmpty()) {
                 throw new NotFoundException(Constants.ACCOUNT_NOT_FOUND);
             }
+
             User user = userOpt.get();
 
             if (!Objects.equals(user.getPassHash(), request.getPassHash())) {
                 throw new AuthException(Constants.PASSWORD_INCORRECT);
             }
 
-            // Generate token
-            String token = UUID.randomUUID().toString();
+            String token = jwtUtil.generateToken(user.getUsername());
 
-            // Create session
-            userSessionService.createSession(user, token);
+            // SAVE SESSION
+            UserSession session = new UserSession();
+            session.setToken(token);
+            session.setUser(user);
+            session.setRevoked(false);
+            session.setExpiredAt(LocalDateTime.now().plusDays(7));
+
+            userSessionService.save(session);
 
             AuthResponse response = new AuthResponse();
-            response.setMessage(Constants.AUTH_SUCCESS);
             response.setToken(token);
 
             return response;
+
         } catch (ValidationException | NotFoundException | AuthException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public void logout(String token) {
+        userSessionService.revokeByToken(token);
     }
 
     @Override

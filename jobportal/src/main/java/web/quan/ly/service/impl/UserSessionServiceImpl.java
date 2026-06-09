@@ -2,65 +2,61 @@ package web.quan.ly.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import web.quan.ly.entity.User;
+import org.springframework.transaction.annotation.Transactional;
 import web.quan.ly.entity.UserSession;
 import web.quan.ly.repository.UserSessionRepository;
 import web.quan.ly.service.UserSessionService;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserSessionServiceImpl implements UserSessionService {
+
     @Autowired
     private UserSessionRepository userSessionRepository;
 
     @Override
-    public List<UserSession> getAll() {
-        return userSessionRepository.findAll();
-    }
-
-    @Override
-    public UserSession getById(Integer id) {
-        Optional<UserSession> session = userSessionRepository.findById(id);
-        return session.orElse(null);
-    }
-
-    @Override
-    public UserSession getByToken(String token) {
-        return userSessionRepository.findByToken(token).orElse(null);
-    }
-
-    @Override
-    public UserSession createSession(User user, String token) {
-        UserSession session = new UserSession();
-        session.setUser(user);
-        session.setToken(token);
-        session.setRevoked(false);
-        session.setExpiredAt(LocalDate.now().plusDays(1));
+    public UserSession save(UserSession session) {
         return userSessionRepository.save(session);
     }
 
     @Override
-    public void revokeSession(String token) {
-        Optional<UserSession> sessionOpt = userSessionRepository.findByToken(token);
-        if (sessionOpt.isPresent()) {
-            UserSession session = sessionOpt.get();
-            session.setRevoked(true);
-            userSessionRepository.save(session);
-        }
+    public UserSession findByToken(String token) {
+        return userSessionRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token khong tim thay "));
+    }
+
+    @Override
+    @Transactional
+    public void revokeByToken(String token) {
+        UserSession session = findByToken(token);
+        session.setRevoked(true);
+        userSessionRepository.save(session);
+    }
+
+    @Override
+    @Transactional
+    public void revokeAllByUserId(Integer userId) {
+        List<UserSession> sessions =
+                userSessionRepository.findByUser_IdAndRevokedFalse(userId);
+
+        sessions.forEach(s -> s.setRevoked(true));
+
+        userSessionRepository.saveAll(sessions);
     }
 
     @Override
     public boolean isTokenValid(String token) {
-        Optional<UserSession> sessionOpt = userSessionRepository.findByToken(token);
-        if (sessionOpt.isEmpty()) {
-            return false;
-        }
-        UserSession session = sessionOpt.get();
-        boolean isNotRevoked = !Boolean.TRUE.equals(session.getRevoked());
-        boolean isNotExpired = session.getExpiredAt().isAfter(LocalDate.now());
-        return isNotRevoked && isNotExpired;
+        return userSessionRepository.findByToken(token)
+                .map(s -> !s.isRevoked()
+                        && (s.getExpiredAt() == null ||
+                        s.getExpiredAt().isAfter(LocalDateTime.now())))
+                .orElse(false);
+    }
+
+    @Override
+    public void logout(String token) {
+        revokeByToken(token);
     }
 }

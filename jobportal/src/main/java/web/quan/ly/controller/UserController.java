@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import web.quan.ly.common.ApiResponse;
+import web.quan.ly.dto.UserResponse;
 import web.quan.ly.entity.User;
 import web.quan.ly.service.UserService;
 
@@ -19,15 +20,27 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<User>>> getAll() {
-        List<User> users = userService.getAll();
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAll() {
+
+        List<UserResponse> users = userService.getAll()
+                .stream()
+                .map(UserResponse::fromEntity)
+                .toList();
+
         return ResponseEntity.ok(ApiResponse.success(users));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<User>> getById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<UserResponse>> getById(
+            @PathVariable Integer id) {
+
         User user = userService.getById(id);
-        return ResponseEntity.ok(ApiResponse.success(user));
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        UserResponse.fromEntity(user)
+                )
+        );
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
