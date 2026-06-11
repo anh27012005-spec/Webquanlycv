@@ -15,10 +15,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import web.quan.ly.entity.User;
 import web.quan.ly.entity.UserSession;
-import web.quan.ly.repository.UserSessionRepository;
 import web.quan.ly.service.UserSessionService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -26,9 +26,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserSessionService userSessionService;
-
-    @Autowired
-    private UserSessionRepository userSessionRepository;
 
     @Override
     protected void doFilterInternal(
@@ -44,23 +41,54 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
+        String token = authHeader.substring(7).trim();
+
+        if (token.isEmpty()
+                || token.equalsIgnoreCase("null")
+                || token.equalsIgnoreCase("undefined")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
 
-            if (!userSessionService.isTokenValid(token)) {
+            System.out.println("=================================");
+            System.out.println("TOKEN NHAN DUOC:");
+            System.out.println(token);
+
+            UserSession session = userSessionService.findByToken(token);
+
+            System.out.println("SESSION:");
+            System.out.println(session);
+
+            if (session == null) {
+                System.out.println("Khong tim thay token trong DB");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (session.getExpiredAt() != null
+                    && session.getExpiredAt().isBefore(LocalDateTime.now())) {
+
+                System.out.println("Token da het han");
+
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            UserSession session = userSessionRepository
-                    .findByToken(token)
-                    .orElseThrow(() ->
-                            new RuntimeException("Token khong ton tai"));
-
             User user = session.getUser();
 
+            if (user == null) {
+                System.out.println("Session khong co user");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             String roleName = user.getRole().getName();
+
+            System.out.println("USER = " + user.getUsername());
+            System.out.println("ROLE = " + roleName);
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
@@ -82,11 +110,14 @@ public class JwtFilter extends OncePerRequestFilter {
                     .getContext()
                     .setAuthentication(authentication);
 
-        }  catch (Exception e) {
-                e.printStackTrace();
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+            System.out.println("Da set Authentication thanh cong");
+
+        } catch (Exception e) {
+
+            System.out.println("===== JWT FILTER ERROR =====");
+            e.printStackTrace();
+
+        }
 
         filterChain.doFilter(request, response);
     }

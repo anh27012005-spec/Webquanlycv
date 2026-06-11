@@ -35,6 +35,15 @@ public class JobServiceImpl implements JobService {
         job.setPosition(request.getPosition());
         job.setDescription(request.getDescription());
         job.setRequirement(request.getRequirement());
+        job.setBenefit(request.getBenefit());
+        job.setSalaryMin(request.getSalaryMin());
+        job.setSalaryMax(request.getSalaryMax());
+        job.setLocation(request.getLocation());
+        job.setExperience(request.getExperience());
+        job.setEmploymentType(request.getEmploymentType());
+        job.setQuantity(request.getQuantity());
+        job.setDeadline(request.getDeadline());
+        job.setStatus (request.getStatus());
 
         return jobRepository.save(job);
     }

@@ -15,8 +15,6 @@ public class UserSession {
     @Column(name = "token", unique = true, nullable = false)
     private String token;
 
-    private boolean revoked;
-
     private LocalDateTime expiredAt;
 
     @ManyToOne
@@ -42,13 +40,6 @@ public class UserSession {
         this.token = token;
     }
 
-    public boolean isRevoked() {
-        return revoked;
-    }
-
-    public void setRevoked(boolean revoked) {
-        this.revoked = revoked;
-    }
 
     public LocalDateTime getExpiredAt() {
         return expiredAt;

@@ -2,11 +2,15 @@ package web.quan.ly.service;
 
 import web.quan.ly.entity.UserSession;
 
+import java.util.List;
+
 public interface UserSessionService {
 
     UserSession save(UserSession session);
 
     UserSession findByToken(String token);
+
+    UserSession findByUserId(Integer userId);
 
     void revokeByToken(String token);
 
@@ -15,4 +19,5 @@ public interface UserSessionService {
     boolean isTokenValid(String token);
 
     void logout(String token);
+
 }

@@ -3,6 +3,8 @@ package web.quan.ly.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 import web.quan.ly.security.JwtUtil;
 import web.quan.ly.common.*;
 import web.quan.ly.dto.AuthResponse;
@@ -13,6 +15,7 @@ import web.quan.ly.repository.*;
 import web.quan.ly.service.UserService;
 import web.quan.ly.service.UserSessionService;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserSessionService userSessionService;
+
+    @Autowired
+    private UserSessionRepository userSessionRepository;
 
     @Override
     public List<User> getAll() {
@@ -128,40 +134,38 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponse login(LoginRequest request) {
 
-        try {
-            Optional<User> userOpt = findByUsername(request.getUsername());
+        Optional<User> userOpt = findByUsername(request.getUsername());
 
-            if (userOpt.isEmpty()) {
-                throw new NotFoundException(Constants.ACCOUNT_NOT_FOUND);
-            }
-
-            User user = userOpt.get();
-
-            if (!Objects.equals(user.getPassHash(), request.getPassHash())) {
-                throw new AuthException(Constants.PASSWORD_INCORRECT);
-            }
-
-            String token = jwtUtil.generateToken(user.getUsername());
-
-            // SAVE SESSION
-            UserSession session = new UserSession();
-            session.setToken(token);
-            session.setUser(user);
-            session.setRevoked(false);
-            session.setExpiredAt(LocalDateTime.now().plusDays(7));
-
-            userSessionService.save(session);
-
-            AuthResponse response = new AuthResponse();
-            response.setToken(token);
-
-            return response;
-
-        } catch (ValidationException | NotFoundException | AuthException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        if (userOpt.isEmpty()) {
+            throw new NotFoundException(Constants.ACCOUNT_NOT_FOUND);
         }
+
+        User user = userOpt.get();
+
+        if (!Objects.equals(user.getPassHash(), request.getPassHash())) {
+            throw new AuthException(Constants.PASSWORD_INCORRECT);
+        }
+
+        String token = jwtUtil.generateToken(user.getUsername());
+
+        UserSession userSession =
+                userSessionService.findByUserId(user.getId());
+
+        if (userSession == null) {
+            userSession = new UserSession();
+            userSession.setUser(user);
+        }
+
+        userSession.setToken(token);
+        userSession.setExpiredAt(LocalDateTime.now().plusDays(1));
+        userSession.setUser(user);
+
+        userSessionService.save(userSession);
+
+        AuthResponse response = new AuthResponse();
+        response.setToken(token);
+
+        return response;
     }
 
     @Override
